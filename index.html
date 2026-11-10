@@ -252,9 +252,11 @@ async function load(session){
   user=null;profile=null;
   if(session){
     const u=session.user;
-    const r=await sb.from("profiles").select("*").eq("id",u.id).single();
+    const r=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
     profile=r.data;
-    user={id:u.id,email:u.email,name:(profile&&profile.name)||u.email.split("@")[0]};
+    const meta=u.user_metadata||{};
+    const email=u.email||meta.email||"";
+    user={id:u.id,email,name:(profile&&profile.name)||meta.full_name||meta.name||(email?email.split("@")[0]:"there")};
   }
   hdr();
 }
@@ -309,11 +311,36 @@ $("resend").onclick=async()=>{
   $("cerr").textContent=r.error?r.error.message:"Confirmation email resent. Check your inbox.";
 };
 $("googleBtn").onclick=async()=>{
-  if(!ready)return;
-  await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname}});
+  const err=$("err"),btn=$("googleBtn");
+  err.className="err";err.textContent="";
+  if(!ready)return err.textContent="The site isn't connected to its database yet.";
+  if(location.protocol==="file:"||location.origin==="null")
+    return err.textContent="Google sign-in only works when this page is hosted at a web address (https://... or http://localhost), not opened as a local file.";
+  btn.disabled=true;
+  try{
+    const r=await sb.auth.signInWithOAuth({provider:"google",options:{
+      redirectTo:location.origin+location.pathname,
+      skipBrowserRedirect:true,
+      queryParams:{prompt:"select_account"}
+    }});
+    if(r.error)throw r.error;
+    if(!r.data||!r.data.url)throw new Error("Supabase didn't return a Google sign-in URL. Check that the Google provider is enabled in Supabase.");
+    if(window.top!==window){
+      // Google blocks sign-in inside iframes, so open it in a real tab
+      const w=window.open(r.data.url,"_blank");
+      if(!w)throw new Error("Your browser blocked the Google sign-in window. Allow pop-ups for this page and try again.");
+    }else{
+      location.href=r.data.url;
+    }
+  }catch(e){
+    err.textContent=e.message||"Google sign-in failed.";
+  }finally{
+    btn.disabled=false;
+  }
 };
 async function chooseFree(){
-  await sb.from("profiles").update({onboarded:true}).eq("id",user.id);
+  const r=await sb.from("profiles").upsert({id:user.id,name:user.name,onboarded:true});
+  if(r.error)console.warn("Could not save profile:",r.error.message);
   location.href="planner.html";
 }
 function choosePro(){
@@ -325,10 +352,25 @@ $("gear").onclick=openSettings;
 $("lg").onclick=()=>user?openSettings():openAuth("login");
 $("tt").onclick=()=>setTheme(dark()?"light":"dark");
 $("seg").onclick=e=>{if(e.target.dataset.t)setTheme(e.target.dataset.t)};
-document.querySelectorAll(".scrim").forEach(s=>s.addEventListener("click",e=>{if(e.target===s)closeAll()}));
+document.querySelectorAll(".scrim").forEach(s=>{
+  if(s.id==="auth"||s.id==="codeScrim")return; // sign-in boxes only close via Cancel
+  s.addEventListener("click",e=>{if(e.target===s)closeAll()});
+});
 let t="dark";try{t=localStorage.getItem("pw-theme")||"dark"}catch(e){}
 setTheme(t);
-if(ready)sb.auth.getSession().then(r=>load(r.data.session));
+if(ready)(async()=>{
+  // Did we just come back from Google (or hit an OAuth error)?
+  const raw=location.search+"&"+location.hash.replace(/^#/,"");
+  const params=new URLSearchParams(raw.replace(/^\?/,""));
+  const urlErr=params.get("error_description")||params.get("error");
+  const fromOAuth=!!(params.get("code")||params.get("access_token"));
+  // getSession also finishes the sign-in by reading the code/token from the URL
+  const r=await sb.auth.getSession();
+  await load(r.data.session);
+  if(fromOAuth||urlErr)history.replaceState(null,"",location.pathname);
+  if(urlErr){openAuth("login");$("err").textContent=urlErr}
+  else if(fromOAuth&&r.data.session)enter();
+})();
 
 // support chat
 let chatHist=[];
@@ -336,7 +378,7 @@ function addMsg(role,text){const d=document.createElement("div");d.className="ms
 $("openSupport").onclick=()=>{$("settings").hidden=true;$("support").hidden=false;if(!chatHist.length)addMsg("ai","Hi! Ask me anything about using PlateWise — signing in, diets, budgets, or a bug you're seeing.")};
 $("chatSend").onclick=async()=>{
   const t=$("chatIn").value.trim();if(!t)return;$("chatIn").value="";addMsg("user",t);chatHist.push({role:"user",content:t});
-  const sample=await claude.use("sample");
+  const sample=(typeof claude!=="undefined"&&claude.use)?await claude.use("sample"):null;
   if(!sample){addMsg("ai","Support chat isn't available right now. Try again in a bit.");return}
   addMsg("ai","...");
   try{
