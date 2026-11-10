@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PlateWise Planner</title>
+<style>
+:root{--bg:#0d120f;--card:#161e19;--text:#eaf0eb;--muted:#9aa89f;--border:#27322b;--accent:#5fbf84;--accent2:#8be0ab;--accent-t:#0d1a11;--soft:#1b2a21;--warn:#e8925a;--glow:rgba(95,191,132,.25);--shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--bg:#fbfbf9;--card:#fff;--text:#1b221e;--muted:#68726c;--border:#e3e7e1;--accent:#2f7d4f;--accent2:#58b57d;--accent-t:#fff;--soft:#eaf4ee;--warn:#b3541e;--glow:rgba(47,125,79,.22);--shadow:0 10px 30px rgba(30,60,40,.13);color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:background .35s,color .35s}
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:14px 16px;max-width:980px;margin:0 auto}
+.logo{font-weight:800;font-size:1.35rem;letter-spacing:-.03em;text-align:center}.logo span{color:var(--accent)}
+.hb{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:8px 12px;cursor:pointer;font:inherit;text-decoration:none;display:inline-flex;gap:6px;transition:transform .15s,box-shadow .2s,border-color .2s}
+.hb:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent)}.hb:active{transform:scale(.95)}
+#gear{justify-self:end}
+main{max-width:720px;margin:0 auto;padding:0 16px 56px;position:relative;z-index:0}
+.hero{text-align:center;padding:26px 0 8px;position:relative}
+.hero::before{content:"";position:absolute;inset:-30px -10px auto;height:260px;background:radial-gradient(ellipse at 50% 0,var(--glow),transparent 70%);z-index:-1}
+.hero h1{font-size:clamp(1.6rem,5vw,2.3rem);line-height:1.1;margin:0 0 6px;letter-spacing:-.03em}
+.grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0}
+.dots{display:flex;justify-content:center;gap:6px;margin:18px 0 6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .2s,transform .2s}
+.dot.on{background:var(--accent);transform:scale(1.3)}
+.wiz{display:none;animation:up .4s both}
+.wiz.show{display:block}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.wiz h2{font-size:1.2rem;margin:10px 0 14px;text-align:center}
+.tiles{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}
+.tile{text-align:left;background:var(--card);color:var(--text);border:1.5px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:2px;transition:transform .2s,box-shadow .25s,border-color .2s}
+.tile span{font-size:1.6rem}.tile small{color:var(--muted)}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--shadow)}.tile:active{transform:scale(.97)}
+.tile.on{border-color:var(--accent);background:var(--soft);box-shadow:0 0 0 3px var(--glow)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border);border-radius:999px;background:var(--card);cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+.chip:hover{transform:translateY(-2px);border-color:var(--accent)}
+.chip input{display:none}
+.chip:has(input:checked){background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.chip.fav{background:var(--soft);border-color:var(--accent)}
+.chip.sug{border-style:dashed;color:var(--muted)}
+.chip button{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:0}
+.addrow{display:flex;gap:8px;margin-bottom:10px}
+input.t,select{width:100%;padding:11px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font:inherit;transition:border-color .2s,box-shadow .2s}
+input.t:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.panel{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));padding:18px;border-radius:20px;background:linear-gradient(135deg,var(--soft),var(--card));border:1.5px solid var(--border)}
+.panel label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:5px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:1.2rem;cursor:pointer;transition:transform .15s,border-color .2s}
+.stepper button:hover{border-color:var(--accent);transform:translateY(-2px)}.stepper button:active{transform:scale(.9)}
+.stepper b{min-width:28px;text-align:center;font-size:1.2rem}
+.btn{position:relative;overflow:hidden;border:0;border-radius:16px;padding:14px 26px;font:700 1.05rem inherit;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-t);transition:transform .18s,box-shadow .25s}
+.btn::after{content:"";position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);transition:left .6s}
+.btn:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.btn:hover::after{left:130%}.btn:active{transform:scale(.97)}
+.btn.alt{background:var(--card);color:var(--text);border:1.5px solid var(--border);padding:11px 20px;font-size:1rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.navrow{display:flex;gap:10px;margin-top:22px}
+.navrow .btn{flex:1}
+.go{display:block;width:100%;margin-top:4px;animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--glow)}70%{box-shadow:0 0 0 18px transparent}100%{box-shadow:0 0 0 0 transparent}}
+#out h2.t{font-size:1.4rem;margin:40px 0 12px;text-align:center}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px;animation:up .5s both}
+.bar{height:11px;border-radius:99px;background:var(--border);overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transform-origin:left;animation:grow 1s}
+.bar.over i{background:var(--warn)}
+@keyframes grow{from{transform:scaleX(0)}}
+.warn{color:var(--warn)}.note{font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.days{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));margin-top:14px}
+.day{position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
+.day::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.day:hover{transform:translateY(-4px);box-shadow:0 12px 32px var(--glow);border-color:var(--accent)}
+.day h3{margin:4px 0 2px;display:flex;justify-content:space-between;font-size:1rem}.day h3 small{color:var(--muted);font-weight:500}
+.macro{font-size:.74rem;color:var(--muted);margin-bottom:6px}
+.meal{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--border)}
+.meal .e{font-size:1.25rem}.meal div{flex:1}.meal small{display:block;color:var(--muted);font-size:.72rem}.meal b{font-weight:600;font-size:.92rem}
+.swap{border:1.5px solid var(--border);background:transparent;color:var(--text);border-radius:10px;width:32px;height:32px;cursor:pointer;transition:transform .35s,border-color .2s;flex-shrink:0}
+.swap:hover{transform:rotate(180deg);border-color:var(--accent)}
+.glist{columns:2 230px;column-gap:24px}
+.cat{break-inside:avoid;margin-bottom:14px}.cat h3{margin:0 0 6px;font-size:.92rem;color:var(--accent)}
+.item{display:flex;gap:10px;padding:5px 0;align-items:center;cursor:pointer}
+.item input{accent-color:var(--accent);width:18px;height:18px}
+.item input:checked+span{text-decoration:line-through;color:var(--muted)}
+[hidden],.scrim[hidden]{display:none!important}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow:auto;animation:pop .28s}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(10px)}}
+.modal h3{margin:0 0 12px}
+.seg{display:flex;gap:6px}.seg button{flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font:inherit;transition:transform .15s,background .2s}
+.seg button:hover{transform:translateY(-2px)}.seg button.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.hist{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);cursor:pointer}
+.hist:hover{color:var(--accent)}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto;margin-bottom:10px}
+.msg{padding:8px 12px;border-radius:12px;font-size:.88rem;max-width:88%}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-t)}
+.msg.ai{align-self:flex-start;background:var(--soft)}
+@media(max-width:520px){.hb .t{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<header>
+  <button class="hb" id="tt" style="justify-self:start">☀️</button>
+  <div class="logo">Plate<span>Wise</span></div>
+  <div style="display:flex;gap:8px;justify-self:end"><a class="hb" href="index.html">← <span class="t">Home</span></a><button class="hb" id="gear">⚙ <span class="t">Settings</span></button></div>
+</header>
+
+<main>
+<div class="hero"><h1>Build your <span class="grad">perfect week</span></h1><p>Answer a few quick questions.</p></div>
+<div class="dots" id="dots"></div>
+
+<div class="wiz" data-i="0"><h2>How do you eat?</h2><div class="tiles" id="tiles"></div><div class="navrow"><button class="btn wide" id="n0">Next →</button></div></div>
+
+<div class="wiz" data-i="1"><h2>Any allergies?</h2>
+  <div class="chips" id="al">
+    <label class="chip"><input type="checkbox" value="gluten">🌾 Gluten</label>
+    <label class="chip"><input type="checkbox" value="dairy">🥛 Dairy</label>
+    <label class="chip"><input type="checkbox" value="eggs">🥚 Eggs</label>
+    <label class="chip"><input type="checkbox" value="nuts">🥜 Nuts</label>
+    <label class="chip"><input type="checkbox" value="fish">🐟 Fish</label>
+  </div><div class="navrow"><button class="btn alt" id="b1">← Back</button><button class="btn wide" id="n1">Next →</button></div></div>
+
+<div class="wiz" data-i="2"><h2>Favourite foods</h2>
+  <div class="addrow"><input class="t" id="favIn" placeholder="Type a food and press Enter"><button class="btn alt" id="favAdd">Add</button></div>
+  <div class="chips" id="favs"></div>
+  <div class="chips" id="sugs" style="margin-top:8px"></div>
+  <div class="navrow"><button class="btn alt" id="b2">← Back</button><button class="btn wide" id="n2">Next →</button></div></div>
+
+<div class="wiz" data-i="3"><h2>People & daily calories</h2>
+  <div class="panel">
+    <div><label>People eating</label><div class="stepper"><button id="pm">−</button><b id="pc">2</b><button id="pp">+</button></div></div>
+    <div><label for="cal">Daily calorie limit (per person)</label><input class="t" id="cal" type="number" min="1000" step="50" value="2000"></div>
+  </div><div class="navrow"><button class="btn alt" id="b3">← Back</button><button class="btn wide" id="n3">Next →</button></div></div>
+
+<div class="wiz" data-i="4"><h2>Where do you shop?</h2>
+  <div class="panel">
+    <div><label for="country">Country</label><select id="country"><option value="">Select a country</option></select></div>
+    <div><label for="cur">Currency</label><select id="cur"></select></div>
+  </div>
+  <p class="note">Pick a country and we'll set its currency and estimate local prices for you.</p>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+    <button class="btn alt" id="aiPrices">🤖 Estimate local prices</button>
+    <button class="btn alt" id="prBtn">💰 Edit ingredient prices</button>
+  </div>
+  <p class="note" id="aiNote"></p>
+  <div class="navrow"><button class="btn alt" id="b4">← Back</button><button class="btn wide" id="n4">Next →</button></div></div>
+
+<div class="wiz" data-i="5"><h2>Weekly budget</h2>
+  <div class="panel"><div><label for="budget">Weekly budget</label><input class="t" id="budget" type="number" min="1" value="60"></div></div>
+  <div class="navrow"><button class="btn alt" id="b5">← Back</button><button class="btn go" id="gen">✨ Generate my week</button></div></div>
+
+<div id="out" hidden>
+  <h2 class="t">Your week</h2>
+  <div class="card" id="sum"></div>
+  <div style="text-align:center;margin-top:14px"><button class="btn alt" id="saveHist">💾 Save to history</button></div>
+  <div class="days" id="days"></div>
+  <h2 class="t">🛒 Grocery list</h2>
+  <div class="card"><div class="glist" id="groc"></div></div>
+  <p class="note" style="text-align:center">Costs and macros are estimates. Tap ↻ on any meal to swap it.</p>
+</div>
+
+<div style="text-align:center;margin-top:40px"><button class="hb" id="histBtn">🕘 History</button></div>
+</main>
+
+<div class="scrim" id="prices" hidden><div class="modal" style="max-width:440px"><h3>Ingredient prices</h3><p class="note" style="margin:0 0 10px">Price per kg, per litre, or each, in your currency.</p><div id="prList" style="max-height:50vh;overflow:auto"></div><button class="btn alt" style="width:100%;margin-top:14px" id="prClose">Done</button></div></div>
+
+<div class="scrim" id="histModal" hidden><div class="modal"><h3>Your saved weeks</h3><div id="histList"><p class="note">Log in from the home page to save and see your history.</p></div><button class="btn alt" style="width:100%;margin-top:14px" id="histClose">Close</button></div></div>
+
+<div class="scrim" id="settings" hidden>
+  <div class="modal">
+    <h3>Settings</h3>
+    <label style="font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px">Background</label>
+    <div class="seg" id="seg"><button data-t="dark">⚫ Black</button><button data-t="light">⚪ White</button><button data-t="system">System</button></div>
+    <label style="font-size:.85rem;color:var(--muted);display:block;margin:16px 0 6px">Need help?</label>
+    <button class="btn alt" style="width:100%" id="openSupport">💬 Ask support</button>
+    <button class="btn alt" style="width:100%;margin-top:16px" id="setClose">Close</button>
+  </div>
+</div>
+
+<div class="scrim" id="support" hidden>
+  <div class="modal">
+    <h3>Support</h3>
+    <p class="note" style="margin-top:-6px">Ask about using PlateWise. This isn't a nutritionist or doctor.</p>
+    <div class="chat" id="chatLog"></div>
+    <div class="addrow"><input class="t" id="chatIn" placeholder="Describe the problem..."><button class="btn alt" id="chatSend">Send</button></div>
+    <button class="btn alt" style="width:100%;margin-top:10px" id="supClose">Close</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL="https://idrcnuzsdrhdyjpybbqt.supabase.co",SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkcmNudXpzZHJoZHlqcHliYnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwMTk1MDIsImV4cCI6MjEwOTU5NTUwMn0.v7jg0Lgrn6UZ0EplNXRH26GpOXAFj5DfdLgaNiN_dQE";
+const sbReady=!SUPABASE_URL.startsWith("PASTE");
+const sb=sbReady?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+const M_RAW=[{"n": "Oatmeal with banana & peanut butter", "t": "B", "g": "xvp", "al": ["gluten", "nuts"], "cal": 420, "p": 14, "c": 55, "ing": [{"name": "oats", "q": 50, "u": "g", "k": "K"}, {"name": "banana", "q": 1, "u": "pcs", "k": "P"}, {"name": "peanut butter", "q": 15, "u": "g", "k": "K"}]}, {"n": "Scrambled eggs on toast", "t": "B", "g": "xp", "al": ["eggs", "gluten"], "cal": 380, "p": 20, "c": 30, "ing": [{"name": "eggs", "q": 2, "u": "pcs", "k": "D"}, {"name": "bread", "q": 2, "u": "slices", "k": "K"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "olive oil", "q": 5, "u": "ml", "k": "K"}]}, {"n": "Greek yogurt, fruit & almonds", "t": "B", "g": "xpa", "al": ["dairy", "nuts"], "cal": 350, "p": 22, "c": 28, "ing": [{"name": "Greek yogurt", "q": 200, "u": "g", "k": "D"}, {"name": "apple", "q": 1, "u": "pcs", "k": "P"}, {"name": "almonds", "q": 20, "u": "g", "k": "K"}]}, {"n": "Tofu scramble wrap", "t": "B", "g": "xvp", "al": ["gluten"], "cal": 400, "p": 18, "c": 35, "ing": [{"name": "tofu", "q": 120, "u": "g", "k": "R"}, {"name": "tortilla", "q": 1, "u": "pcs", "k": "K"}, {"name": "spinach", "q": 30, "u": "g", "k": "P"}]}, {"n": "Chia pudding with berries", "t": "B", "g": "xvp", "al": [], "cal": 380, "p": 10, "c": 45, "ing": [{"name": "chia seeds", "q": 30, "u": "g", "k": "K"}, {"name": "soy milk", "q": 200, "u": "ml", "k": "K"}, {"name": "berries", "q": 80, "u": "g", "k": "P"}]}, {"n": "Avocado toast with egg", "t": "B", "g": "xp", "al": ["eggs", "gluten"], "cal": 430, "p": 18, "c": 32, "ing": [{"name": "avocado", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "eggs", "q": 2, "u": "pcs", "k": "D"}, {"name": "bread", "q": 2, "u": "slices", "k": "K"}]}, {"n": "Bacon & eggs", "t": "B", "g": "xca", "al": ["eggs"], "cal": 450, "p": 28, "c": 2, "ing": [{"name": "bacon", "q": 80, "u": "g", "k": "R"}, {"name": "eggs", "q": 3, "u": "pcs", "k": "D"}]}, {"n": "Eggs with honey & berries", "t": "B", "g": "xa", "al": ["eggs"], "cal": 360, "p": 19, "c": 30, "ing": [{"name": "eggs", "q": 3, "u": "pcs", "k": "D"}, {"name": "honey", "q": 15, "u": "g", "k": "K"}, {"name": "berries", "q": 80, "u": "g", "k": "P"}]}, {"n": "Yogurt with honey & fruit", "t": "B", "g": "xa", "al": ["dairy"], "cal": 330, "p": 16, "c": 45, "ing": [{"name": "Greek yogurt", "q": 200, "u": "g", "k": "D"}, {"name": "honey", "q": 15, "u": "g", "k": "K"}, {"name": "berries", "q": 80, "u": "g", "k": "P"}]}, {"n": "Raw egg & milk shake", "t": "B", "g": "r", "al": ["eggs", "dairy"], "cal": 280, "p": 17, "c": 10, "ing": [{"name": "eggs", "q": 3, "u": "pcs", "k": "D"}, {"name": "raw milk", "q": 200, "u": "ml", "k": "D"}]}, {"n": "Chickpea & veggie salad", "t": "L", "g": "xvp", "al": [], "cal": 380, "p": 15, "c": 50, "ing": [{"name": "chickpeas", "q": 150, "u": "g", "k": "K"}, {"name": "cucumber", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "olive oil", "q": 10, "u": "ml", "k": "K"}, {"name": "lemon", "q": 0.25, "u": "pcs", "k": "P"}]}, {"n": "Chicken rice bowl", "t": "L", "g": "x", "al": [], "cal": 520, "p": 38, "c": 55, "ing": [{"name": "chicken breast", "q": 150, "u": "g", "k": "R"}, {"name": "rice", "q": 80, "u": "g", "k": "K"}, {"name": "broccoli", "q": 100, "u": "g", "k": "P"}, {"name": "olive oil", "q": 5, "u": "ml", "k": "K"}]}, {"n": "Tuna & white bean salad", "t": "L", "g": "x", "al": ["fish"], "cal": 420, "p": 34, "c": 30, "ing": [{"name": "tuna", "q": 100, "u": "g", "k": "R"}, {"name": "white beans", "q": 100, "u": "g", "k": "K"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "olive oil", "q": 10, "u": "ml", "k": "K"}]}, {"n": "Lentil soup with bread", "t": "L", "g": "xvp", "al": ["gluten"], "cal": 360, "p": 18, "c": 55, "ing": [{"name": "lentils", "q": 80, "u": "g", "k": "K"}, {"name": "carrot", "q": 1, "u": "pcs", "k": "P"}, {"name": "onion", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "bread", "q": 1, "u": "slices", "k": "K"}]}, {"n": "Veggie omelette & salad", "t": "L", "g": "xp", "al": ["eggs"], "cal": 350, "p": 21, "c": 12, "ing": [{"name": "eggs", "q": 3, "u": "pcs", "k": "D"}, {"name": "bell pepper", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "lettuce", "q": 40, "u": "g", "k": "P"}]}, {"n": "Turkey & hummus wrap", "t": "L", "g": "x", "al": ["gluten"], "cal": 480, "p": 30, "c": 42, "ing": [{"name": "turkey slices", "q": 100, "u": "g", "k": "R"}, {"name": "tortilla", "q": 1, "u": "pcs", "k": "K"}, {"name": "hummus", "q": 40, "u": "g", "k": "K"}, {"name": "lettuce", "q": 40, "u": "g", "k": "P"}]}, {"n": "Pasta with tomato & veg", "t": "L", "g": "xvp", "al": ["gluten"], "cal": 450, "p": 14, "c": 70, "ing": [{"name": "pasta", "q": 90, "u": "g", "k": "K"}, {"name": "tomato", "q": 2, "u": "pcs", "k": "P"}, {"name": "zucchini", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "olive oil", "q": 5, "u": "ml", "k": "K"}]}, {"n": "Baked chicken with potatoes", "t": "D", "g": "x", "al": [], "cal": 540, "p": 42, "c": 45, "ing": [{"name": "chicken breast", "q": 180, "u": "g", "k": "R"}, {"name": "potatoes", "q": 250, "u": "g", "k": "P"}, {"name": "carrot", "q": 1, "u": "pcs", "k": "P"}, {"name": "olive oil", "q": 10, "u": "ml", "k": "K"}]}, {"n": "Beef stir-fry with rice", "t": "D", "g": "x", "al": [], "cal": 580, "p": 35, "c": 55, "ing": [{"name": "beef strips", "q": 150, "u": "g", "k": "R"}, {"name": "rice", "q": 80, "u": "g", "k": "K"}, {"name": "bell pepper", "q": 1, "u": "pcs", "k": "P"}, {"name": "soy sauce", "q": 15, "u": "ml", "k": "K"}]}, {"n": "Chickpea & spinach curry", "t": "D", "g": "xvp", "al": [], "cal": 480, "p": 18, "c": 60, "ing": [{"name": "chickpeas", "q": 150, "u": "g", "k": "K"}, {"name": "coconut milk", "q": 100, "u": "ml", "k": "K"}, {"name": "rice", "q": 80, "u": "g", "k": "K"}, {"name": "spinach", "q": 50, "u": "g", "k": "P"}, {"name": "onion", "q": 0.5, "u": "pcs", "k": "P"}]}, {"n": "Baked salmon with veggies", "t": "D", "g": "x", "al": ["fish"], "cal": 560, "p": 38, "c": 35, "ing": [{"name": "salmon", "q": 150, "u": "g", "k": "R"}, {"name": "broccoli", "q": 150, "u": "g", "k": "P"}, {"name": "potatoes", "q": 150, "u": "g", "k": "P"}, {"name": "lemon", "q": 0.25, "u": "pcs", "k": "P"}]}, {"n": "Tofu & broccoli stir-fry", "t": "D", "g": "xvp", "al": [], "cal": 460, "p": 24, "c": 50, "ing": [{"name": "tofu", "q": 150, "u": "g", "k": "R"}, {"name": "rice", "q": 80, "u": "g", "k": "K"}, {"name": "broccoli", "q": 100, "u": "g", "k": "P"}, {"name": "soy sauce", "q": 15, "u": "ml", "k": "K"}]}, {"n": "Spaghetti bolognese", "t": "D", "g": "x", "al": ["gluten"], "cal": 620, "p": 32, "c": 65, "ing": [{"name": "pasta", "q": 90, "u": "g", "k": "K"}, {"name": "ground beef", "q": 120, "u": "g", "k": "R"}, {"name": "tomato", "q": 2, "u": "pcs", "k": "P"}, {"name": "onion", "q": 0.5, "u": "pcs", "k": "P"}]}, {"n": "Shakshuka with bread", "t": "D", "g": "xp", "al": ["eggs", "gluten"], "cal": 420, "p": 20, "c": 38, "ing": [{"name": "eggs", "q": 2, "u": "pcs", "k": "D"}, {"name": "tomato", "q": 3, "u": "pcs", "k": "P"}, {"name": "bell pepper", "q": 1, "u": "pcs", "k": "P"}, {"name": "onion", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "bread", "q": 2, "u": "slices", "k": "K"}]}, {"n": "Ribeye steak & fried eggs", "t": "BLD", "g": "xca", "al": ["eggs", "dairy"], "cal": 650, "p": 48, "c": 2, "ing": [{"name": "ribeye steak", "q": 200, "u": "g", "k": "R"}, {"name": "eggs", "q": 2, "u": "pcs", "k": "D"}, {"name": "butter", "q": 10, "u": "g", "k": "D"}]}, {"n": "Beef patties with butter", "t": "BLD", "g": "xca", "al": ["dairy"], "cal": 520, "p": 40, "c": 1, "ing": [{"name": "ground beef", "q": 200, "u": "g", "k": "R"}, {"name": "butter", "q": 15, "u": "g", "k": "D"}]}, {"n": "Pan-seared salmon in butter", "t": "LD", "g": "xca", "al": ["fish", "dairy"], "cal": 520, "p": 38, "c": 1, "ing": [{"name": "salmon", "q": 170, "u": "g", "k": "R"}, {"name": "butter", "q": 15, "u": "g", "k": "D"}]}, {"n": "Roast chicken thighs", "t": "LD", "g": "xca", "al": ["dairy"], "cal": 480, "p": 36, "c": 1, "ing": [{"name": "chicken thighs", "q": 250, "u": "g", "k": "R"}, {"name": "butter", "q": 10, "u": "g", "k": "D"}]}, {"n": "Lamb chops", "t": "LD", "g": "xca", "al": [], "cal": 540, "p": 42, "c": 0, "ing": [{"name": "lamb chops", "q": 220, "u": "g", "k": "R"}]}, {"n": "Beef & rice bowl with orange", "t": "LD", "g": "xa", "al": [], "cal": 560, "p": 34, "c": 55, "ing": [{"name": "ground beef", "q": 150, "u": "g", "k": "R"}, {"name": "rice", "q": 80, "u": "g", "k": "K"}, {"name": "orange", "q": 1, "u": "pcs", "k": "P"}]}, {"n": "Steak with sweet potato", "t": "LD", "g": "xa", "al": ["dairy"], "cal": 530, "p": 40, "c": 38, "ing": [{"name": "steak", "q": 180, "u": "g", "k": "R"}, {"name": "sweet potato", "q": 200, "u": "g", "k": "P"}, {"name": "butter", "q": 10, "u": "g", "k": "D"}]}, {"n": "Steak tartare with egg yolk", "t": "BLD", "g": "r", "al": ["eggs"], "cal": 420, "p": 36, "c": 1, "ing": [{"name": "raw beef", "q": 150, "u": "g", "k": "R"}, {"name": "egg yolks", "q": 2, "u": "pcs", "k": "D"}]}, {"n": "Salmon sashimi", "t": "LD", "g": "r", "al": ["fish"], "cal": 330, "p": 34, "c": 0, "ing": [{"name": "sushi-grade salmon", "q": 150, "u": "g", "k": "R"}]}, {"n": "Beef carpaccio", "t": "LD", "g": "r", "al": [], "cal": 300, "p": 32, "c": 1, "ing": [{"name": "raw beef sirloin", "q": 150, "u": "g", "k": "R"}]}, {"n": "Boiled eggs with butter", "t": "B", "g": "xca", "al": ["eggs", "dairy"], "cal": 320, "p": 20, "c": 2, "ing": [{"name": "eggs", "q": 4, "u": "pcs", "k": "D"}, {"name": "butter", "q": 10, "u": "g", "k": "D"}]}, {"n": "Grilled sardines", "t": "LD", "g": "xca", "al": ["fish"], "cal": 380, "p": 34, "c": 0, "ing": [{"name": "sardines", "q": 250, "u": "g", "k": "R"}]}, {"n": "Sardines with salad & bread", "t": "D", "g": "x", "al": ["fish", "gluten"], "cal": 460, "p": 32, "c": 35, "ing": [{"name": "sardines", "q": 250, "u": "g", "k": "R"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "cucumber", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "lemon", "q": 0.5, "u": "pcs", "k": "P"}, {"name": "bread", "q": 2, "u": "slices", "k": "K"}]}, {"n": "Apple with peanut butter", "t": "S", "g": "xvp", "al": ["nuts"], "cal": 220, "p": 7, "c": 24, "ing": [{"name": "apple", "q": 1, "u": "pcs", "k": "P"}, {"name": "peanut butter", "q": 20, "u": "g", "k": "K"}]}, {"n": "Greek yogurt cup", "t": "S", "g": "xpa", "al": ["dairy"], "cal": 150, "p": 15, "c": 10, "ing": [{"name": "Greek yogurt", "q": 120, "u": "g", "k": "D"}]}, {"n": "Handful of almonds", "t": "S", "g": "xvpa", "al": ["nuts"], "cal": 180, "p": 6, "c": 6, "ing": [{"name": "almonds", "q": 30, "u": "g", "k": "K"}]}, {"n": "Boiled egg", "t": "S", "g": "xpca", "al": ["eggs"], "cal": 80, "p": 7, "c": 1, "ing": [{"name": "eggs", "q": 1, "u": "pcs", "k": "D"}]}, {"n": "Hummus with cucumber", "t": "S", "g": "xvp", "al": [], "cal": 150, "p": 6, "c": 14, "ing": [{"name": "hummus", "q": 50, "u": "g", "k": "K"}, {"name": "cucumber", "q": 0.5, "u": "pcs", "k": "P"}]}, {"n": "Banana", "t": "S", "g": "xvpa", "al": [], "cal": 105, "p": 1, "c": 27, "ing": [{"name": "banana", "q": 1, "u": "pcs", "k": "P"}]}, {"n": "Chia & berry bowl", "t": "S", "g": "xvp", "al": [], "cal": 160, "p": 5, "c": 22, "ing": [{"name": "chia seeds", "q": 15, "u": "g", "k": "K"}, {"name": "berries", "q": 60, "u": "g", "k": "P"}]}, {"n": "Cheese & tomato bite", "t": "S", "g": "xp", "al": ["dairy"], "cal": 180, "p": 10, "c": 5, "ing": [{"name": "Greek yogurt", "q": 0, "u": "g", "k": "D"}, {"name": "tomato", "q": 1, "u": "pcs", "k": "P"}, {"name": "butter", "q": 10, "u": "g", "k": "D"}]}, {"n": "Turkey roll-ups", "t": "S", "g": "xa", "al": [], "cal": 160, "p": 20, "c": 1, "ing": [{"name": "turkey slices", "q": 60, "u": "g", "k": "R"}]}, {"n": "Orange", "t": "S", "g": "xvpa", "al": [], "cal": 70, "p": 1, "c": 17, "ing": [{"name": "orange", "q": 1, "u": "pcs", "k": "P"}]}, {"n": "Sardine snack", "t": "S", "g": "xca", "al": ["fish"], "cal": 190, "p": 18, "c": 0, "ing": [{"name": "sardines", "q": 80, "u": "g", "k": "R"}]}, {"n": "Berries & cream", "t": "S", "g": "xca", "al": ["dairy"], "cal": 170, "p": 3, "c": 12, "ing": [{"name": "berries", "q": 80, "u": "g", "k": "P"}, {"name": "butter", "q": 15, "u": "g", "k": "D"}]}];
+const M=M_RAW.map(m=>({...m,s:(m.n+" "+m.ing.map(i=>i.name).join(" ")).toLowerCase()}));
+const DIETS=[["x","🍽️","No restrictions","Eat anything"],["p","🥕","Vegetarian","No meat or fish"],["v","🌱","Vegan","Plants only"],["c","🥩","Carnivore","Meat, fish, eggs"],["r","🍣","Raw carnivore","Uncooked animal foods"],["a","🍯","Animal-based","Meat, dairy, fruit, honey"]];
+const CATS={P:"🥬 Produce",R:"🥩 Protein",D:"🥚 Dairy & eggs",K:"🫙 Pantry"};
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const TYPES=[["B","🌅","Breakfast"],["L","☀️","Lunch"],["S","🍎","Snack"],["D","🌙","Dinner"]];
+const COUNTRY_CUR={"Afghanistan": "AFN", "Albania": "ALL", "Algeria": "DZD", "Andorra": "EUR", "Angola": "AOA", "Argentina": "ARS", "Armenia": "AMD", "Australia": "AUD", "Austria": "EUR", "Azerbaijan": "AZN", "Bahamas": "BSD", "Bahrain": "BHD", "Bangladesh": "BDT", "Barbados": "BBD", "Belarus": "BYN", "Belgium": "EUR", "Belize": "BZD", "Benin": "XOF", "Bhutan": "BTN", "Bolivia": "BOB", "Bosnia and Herzegovina": "BAM", "Botswana": "BWP", "Brazil": "BRL", "Brunei": "BND", "Bulgaria": "BGN", "Burkina Faso": "XOF", "Burundi": "BIF", "Cambodia": "KHR", "Cameroon": "XAF", "Canada": "CAD", "Cape Verde": "CVE", "Central African Republic": "XAF", "Chad": "XAF", "Chile": "CLP", "China": "CNY", "Colombia": "COP", "Comoros": "KMF", "Congo (DRC)": "CDF", "Congo (Republic)": "XAF", "Costa Rica": "CRC", "Croatia": "EUR", "Cuba": "CUP", "Cyprus": "EUR", "Czech Republic": "CZK", "Denmark": "DKK", "Djibouti": "DJF", "Dominican Republic": "DOP", "Ecuador": "USD", "Egypt": "EGP", "El Salvador": "USD", "Equatorial Guinea": "XAF", "Eritrea": "ERN", "Estonia": "EUR", "Eswatini": "SZL", "Ethiopia": "ETB", "Fiji": "FJD", "Finland": "EUR", "France": "EUR", "Gabon": "XAF", "Gambia": "GMD", "Georgia": "GEL", "Germany": "EUR", "Ghana": "GHS", "Greece": "EUR", "Guatemala": "GTQ", "Guinea": "GNF", "Guinea-Bissau": "XOF", "Guyana": "GYD", "Haiti": "HTG", "Honduras": "HNL", "Hungary": "HUF", "Iceland": "ISK", "India": "INR", "Indonesia": "IDR", "Iran": "IRR", "Iraq": "IQD", "Ireland": "EUR", "Israel": "ILS", "Italy": "EUR", "Ivory Coast": "XOF", "Jamaica": "JMD", "Japan": "JPY", "Jordan": "JOD", "Kazakhstan": "KZT", "Kenya": "KES", "Kuwait": "KWD", "Kyrgyzstan": "KGS", "Laos": "LAK", "Latvia": "EUR", "Lebanon": "LBP", "Lesotho": "LSL", "Liberia": "LRD", "Libya": "LYD", "Liechtenstein": "CHF", "Lithuania": "EUR", "Luxembourg": "EUR", "Madagascar": "MGA", "Malawi": "MWK", "Malaysia": "MYR", "Maldives": "MVR", "Mali": "XOF", "Malta": "EUR", "Mauritania": "MRU", "Mauritius": "MUR", "Mexico": "MXN", "Moldova": "MDL", "Monaco": "EUR", "Mongolia": "MNT", "Montenegro": "EUR", "Morocco": "MAD", "Mozambique": "MZN", "Myanmar": "MMK", "Namibia": "NAD", "Nepal": "NPR", "Netherlands": "EUR", "New Zealand": "NZD", "Nicaragua": "NIO", "Niger": "XOF", "Nigeria": "NGN", "North Macedonia": "MKD", "Norway": "NOK", "Oman": "OMR", "Pakistan": "PKR", "Panama": "PAB", "Papua New Guinea": "PGK", "Paraguay": "PYG", "Peru": "PEN", "Philippines": "PHP", "Poland": "PLN", "Portugal": "EUR", "Qatar": "QAR", "Romania": "RON", "Russia": "RUB", "Rwanda": "RWF", "Saudi Arabia": "SAR", "Senegal": "XOF", "Serbia": "RSD", "Sierra Leone": "SLE", "Singapore": "SGD", "Slovakia": "EUR", "Slovenia": "EUR", "Somalia": "SOS", "South Africa": "ZAR", "South Korea": "KRW", "South Sudan": "SSP", "Spain": "EUR", "Sri Lanka": "LKR", "Sudan": "SDG", "Suriname": "SRD", "Sweden": "SEK", "Switzerland": "CHF", "Syria": "SYP", "Taiwan": "TWD", "Tajikistan": "TJS", "Tanzania": "TZS", "Thailand": "THB", "Togo": "XOF", "Trinidad and Tobago": "TTD", "Tunisia": "TND", "Turkey": "TRY", "Turkmenistan": "TMT", "Uganda": "UGX", "Ukraine": "UAH", "United Arab Emirates": "AED", "United Kingdom": "GBP", "United States": "USD", "Uruguay": "UYU", "Uzbekistan": "UZS", "Venezuela": "VES", "Vietnam": "VND", "Yemen": "YER", "Zambia": "ZMW", "Zimbabwe": "ZWL"};
+const COUNTRIES=Object.keys(COUNTRY_CUR).sort();
+(function(){const sel=document.getElementById("country");COUNTRIES.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c+" ("+COUNTRY_CUR[c]+")";sel.appendChild(o)});
+  const curs=[...new Set(Object.values(COUNTRY_CUR))].sort();const cs=document.getElementById("cur");curs.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;if(c==="TND")o.selected=true;cs.appendChild(o)});
+  sel.value="Tunisia";
+  sel.addEventListener("change",()=>{const cur=COUNTRY_CUR[sel.value];if(cur)cs.value=cur});
+})();
+const SUG=["chicken","eggs","rice","salmon","avocado","pasta","beef","tofu"];
+let FX={};
+let PR={oats:8,banana:.7,"peanut butter":22,eggs:.25,bread:.12,tomato:.3,"olive oil":20,"Greek yogurt":9,apple:.8,almonds:45,tofu:22,tortilla:.6,spinach:4,"chia seeds":40,"soy milk":6,berries:30,avocado:3,bacon:38,honey:35,"raw milk":2.5,chickpeas:5,cucumber:.5,lemon:.3,"chicken breast":17,rice:3.5,broccoli:6,tuna:28,"white beans":6,lentils:5,carrot:.25,onion:.2,"bell pepper":.5,lettuce:5,"turkey slices":32,hummus:15,pasta:2.5,zucchini:.6,potatoes:2.5,"beef strips":42,"soy sauce":15,"coconut milk":12,salmon:55,"ground beef":32,"ribeye steak":55,butter:22,"chicken thighs":18,"lamb chops":48,orange:.3,steak:45,"sweet potato":4.5,"raw beef":40,"egg yolks":.25,"sushi-grade salmon":65,"raw beef sirloin":48,sardines:8};
+const $=id=>document.getElementById(id),rnd=a=>a[Math.floor(Math.random()*a.length)];
+let diet="x",people=2,favs=[],theme="dark",step=0,user=null;
+let S={plan:[],o:null};
+
+const STEPS=6;
+function dots(){$("dots").innerHTML=Array.from({length:STEPS},(_,i)=>`<span class="dot ${i===step?'on':''}"></span>`).join("")}
+function goStep(i){step=Math.max(0,Math.min(STEPS-1,i));document.querySelectorAll(".wiz").forEach(w=>w.classList.toggle("show",+w.dataset.i===step));dots();window.scrollTo({top:$('.wiz.show')?.offsetTop-20||0,behavior:"smooth"})}
+[0,1,2,3,4].forEach(i=>$("n"+i).onclick=()=>goStep(i+1));
+[1,2,3,4,5].forEach(i=>$("b"+i).onclick=()=>goStep(i-1));
+
+function tiles(){$("tiles").innerHTML=DIETS.map(([c,e,n,d])=>`<button class="tile ${c===diet?"on":""}" data-c="${c}"><span>${e}</span><b>${n}</b><small>${d}</small></button>`).join("")}
+$("tiles").onclick=e=>{const b=e.target.closest(".tile");if(b){diet=b.dataset.c;tiles()}};
+function renderFavs(){
+  $("favs").innerHTML=favs.map(f=>`<span class="chip fav">⭐ ${f} <button onclick="rmFav('${f}')">✕</button></span>`).join("");
+  $("sugs").innerHTML=SUG.filter(s=>!favs.includes(s)).map(s=>`<button class="chip sug" onclick="addFav('${s}')">+ ${s}</button>`).join("");
+}
+function addFav(v){v.split(",").map(x=>x.trim().toLowerCase()).filter(x=>x&&!favs.includes(x)).forEach(x=>{if(favs.length<12)favs.push(x)});renderFavs()}
+function rmFav(f){favs=favs.filter(x=>x!==f);renderFavs()}
+$("favAdd").onclick=()=>{addFav($("favIn").value);$("favIn").value=""};
+$("favIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("favAdd").onclick()}});
+$("pm").onclick=()=>{people=Math.max(1,people-1);$("pc").textContent=people};
+$("pp").onclick=()=>{people=Math.min(10,people+1);$("pc").textContent=people};
+
+function pool(t,o){return M.filter(m=>m.t.includes(t)&&m.g.includes(o.diet)&&!m.al.some(a=>o.al.includes(a)))}
+const pu=i=>(PR[i.name]??0)/((i.u==="g"||i.u==="ml")?1000:1);
+const cpp=m=>m.ing.reduce((s,i)=>s+i.q*pu(i),0);
+const mc=m=>m.c*S.o.people;
+const fmt=n=>S.o.cur+" "+(n<100?n.toFixed(1):Math.round(n));
+
+function generate(){
+  const o={people,cal:+$("cal").value||2000,budget:+$("budget").value||0,cur:$("cur").value,country:$("country").value.trim(),diet,al:[...document.querySelectorAll("#al input:checked")].map(i=>i.value),favs};
+  S.o=o;M.forEach(m=>{m.fav=favs.some(f=>m.s.includes(f));m.c=cpp(m)});
+  const P={};let bad=null;
+  TYPES.forEach(([t,e,n])=>{P[t]=pool(t,o);if(!P[t].length)bad=n});
+  if(bad){alert("No "+bad.toLowerCase()+" options match this diet and these allergies. Try changing one.");return}
+  const use=new Map(),sc=m=>(use.get(m)||0)-(m.fav?1.5:0);
+  const pick=(list,cur)=>{let c=list.filter(x=>x!==cur);if(!c.length)c=list;const min=Math.min(...c.map(sc));const m=rnd(c.filter(x=>sc(x)===min));use.set(m,(use.get(m)||0)+1);return m};
+  S.plan=DAYS.map(()=>{const d={};TYPES.forEach(([t])=>d[t]=pick(P[t]));return d});
+  const dayCal=d=>TYPES.reduce((s,[t])=>s+d[t].cal,0);
+  const total=()=>S.plan.reduce((s,d)=>s+TYPES.reduce((x,[t])=>x+mc(d[t]),0),0);
+  for(let i=0;i<60&&(total()>o.budget||S.plan.some(d=>dayCal(d)>o.cal));i++){
+    let best=null;
+    S.plan.forEach((d,di)=>TYPES.forEach(([t])=>{
+      const overCal=dayCal(d)>o.cal,overBud=total()>o.budget;
+      const ch=P[t].filter(m=>(overBud?m.c<d[t].c:true)&&(overCal?m.cal<d[t].cal:true));
+      if(ch.length){const score=d[t].c+d[t].cal/500;if(!best||score>best.score)best={di,t,score,ch}}
+    }));
+    if(!best)break;S.plan[best.di][best.t]=pick(best.ch);
+  }
+  render();$("out").hidden=false;$("out").scrollIntoView({behavior:"smooth"});
+}
+function swap(di,t){
+  const cur=S.plan[di][t],c=pool(t,S.o).filter(m=>m!==cur);
+  if(c.length){S.plan[di][t]=rnd(c);render()}
+}
+function qty(q,u){
+  if(u==="g"||u==="ml")return q>=1000?(q/1000).toFixed(1).replace(".0","")+(u==="g"?" kg":" l"):Math.ceil(q/5)*5+" "+u;
+  return (Math.ceil(q*2)/2+" "+(u==="pcs"?"":u)).trim();
+}
+function render(){
+  const o=S.o,total=S.plan.reduce((s,d)=>s+TYPES.reduce((x,[t])=>x+mc(d[t]),0),0),over=Math.round(total*10)/10>o.budget,pct=o.budget?Math.min(100,total/o.budget*100):100;
+  const avgCal=S.plan.reduce((s,d)=>s+TYPES.reduce((x,[t])=>x+d[t].cal,0),0)/7,calPct=Math.min(100,avgCal/o.cal*100),calOver=avgCal>o.cal;
+  $("sum").innerHTML=`<b style="font-size:1.1rem">Estimated cost: ${fmt(total)}</b> <span style="color:var(--muted)">of ${fmt(o.budget)} for ${o.people} ${o.people>1?"people":"person"}</span>
+  <div class="bar ${over?"over":""}"><i style="width:${pct}%"></i></div>
+  <span class="${over?"warn":""}">${over?"Over budget. Try a higher budget or fewer restrictions.":"You're "+fmt(o.budget-total)+" under budget 🎉"}</span>
+  <div style="margin-top:14px"><b>Avg ${Math.round(avgCal)} cal/day</b> <span style="color:var(--muted)">of ${o.cal} limit</span></div>
+  <div class="bar ${calOver?"over":""}"><i style="width:${calPct}%"></i></div>
+  <span class="${calOver?"warn":""}">${calOver?"A bit over your calorie limit on average.":"Within your calorie limit 🎉"}</span>
+  ${o.favs.length?`<p class="note">⭐ Meals with your favourites are marked and appear more often.</p>`:""}`;
+  $("days").innerHTML=S.plan.map((d,i)=>{const dc=TYPES.reduce((s,[t])=>s+d[t].cal,0),dp=TYPES.reduce((s,[t])=>s+d[t].p,0),dcarb=TYPES.reduce((s,[t])=>s+d[t].c_,0);
+  return `<div class="card day"><h3>${DAYS[i]} <small>${fmt(TYPES.reduce((x,[k])=>x+mc(d[k]),0))}</small></h3><div class="macro">${dc} cal · ${dp}g protein · ${dcarb}g carbs</div>${TYPES.map(([k,e,n])=>`<div class="meal"><span class="e">${e}</span><div style="flex:1"><small>${n} · ${d[k].cal} cal · ${fmt(mc(d[k]))}</small><b>${d[k].n}</b>${d[k].fav?" ⭐":""}<div class="macro" style="margin:3px 0 0">${d[k].ing.map(g=>g.name+" "+qty(g.q*o.people,g.u)+" ("+fmt(pu(g)*(g.u==="g"||g.u==="ml"?1000:1))+"/"+(g.u==="g"?"kg":g.u==="ml"?"l":"ea")+")").join(", ")}</div></div><button class="swap" onclick="swap(${i},'${k}')">↻</button></div>`).join("")}</div>`}).join("");
+  const agg={};
+  S.plan.forEach(d=>TYPES.forEach(([k])=>d[k].ing.forEach(g=>{const key=g.name+"|"+g.u;(agg[key]=agg[key]||{...g,q:0}).q+=g.q*o.people})));
+  const by={};Object.values(agg).forEach(g=>(by[g.k]=by[g.k]||[]).push(g));
+  $("groc").innerHTML=Object.keys(CATS).filter(k=>by[k]).map(k=>`<div class="cat"><h3>${CATS[k]}</h3>${by[k].sort((a,b)=>a.name.localeCompare(b.name)).map(g=>`<label class="item"><input type="checkbox"><span>${g.name[0].toUpperCase()+g.name.slice(1)} — ${qty(g.q,g.u)}</span></label>`).join("")}</div>`).join("");
+}
+M.forEach(m=>m.c_=m.c);
+// fix carb field naming collision: ing cost var 'c' vs meal carbs 'c' -> store carbs as c_ computed after cost assigned at generate time
+const _origGen=generate;
+
+const dark=()=>theme==="dark"||(theme==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
+function setTheme(t){
+  theme=t;
+  if(t==="system")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",t);
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  $("tt").textContent=dark()?"☀️":"🌙";
+  try{localStorage.setItem("pw-theme",t)}catch(e){}
+}
+$("tt").onclick=()=>setTheme(dark()?"light":"dark");
+$("gear").onclick=()=>$("settings").hidden=false;
+$("setClose").onclick=()=>$("settings").hidden=true;
+$("seg").onclick=e=>{if(e.target.dataset.t)setTheme(e.target.dataset.t)};
+$("gen").onclick=generate;
+let t0="dark";try{t0=localStorage.getItem("pw-theme")||"dark"}catch(e){}
+setTheme(t0);tiles();renderFavs();dots();goStep(0);
+
+// ingredient price editor
+const UNIT={};M.forEach(m=>m.ing.forEach(i=>UNIT[i.name]=i.u==="g"?"kg":i.u==="ml"?"l":"each"));
+function fillPrList(){$("prList").innerHTML=Object.keys(UNIT).sort().map(n=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0"><span style="flex:1">${n[0].toUpperCase()+n.slice(1)} <small style="color:var(--muted)">/ ${UNIT[n]}</small></span><input class="t" style="width:90px" type="number" min="0" step="0.05" value="${PR[n]??0}" data-n="${n}"></div>`).join("")}
+fillPrList();
+$("prList").oninput=e=>{const n=e.target.dataset.n;if(n)PR[n]=+e.target.value||0};
+$("prBtn").onclick=()=>$("prices").hidden=false;
+$("prClose").onclick=()=>$("prices").hidden=true;
+$("prices").addEventListener("click",e=>{if(e.target.id==="prices")$("prices").hidden=true});
+
+// AI country prices via sample capability
+async function getAI(){const c=await claude.use("sample");return c}
+$("aiPrices").onclick=async()=>{
+  const country=$("country").value;
+  if(!country){$("aiNote").textContent="Pick a country from the list first.";return}
+  $("aiNote").textContent="Looking up typical prices...";
+  const sample=await getAI();
+  if(!sample){$("aiNote").textContent="AI price lookup isn't available right now. Edit prices manually instead.";return}
+  try{
+    const names=Object.keys(UNIT);
+    const r=await sample(`Give typical current grocery prices in ${country}, in ${$("cur").value}, per kg (or per litre, or each for countable items) for these ingredients: ${names.join(", ")}. Reply with ONLY a JSON object mapping each ingredient name exactly as given to a number. No text, no markdown.`,{modelTier:"quick"});
+    const txt=r.text.replace(/```json|```/g,"").trim();
+    const obj=JSON.parse(txt);
+    let n=0;names.forEach(k=>{if(typeof obj[k]==="number"){PR[k]=obj[k];n++}});
+    fillPrList();
+    $("aiNote").textContent=`Updated ${n} prices for ${country}. You can still edit any of them.`;
+  }catch(e){$("aiNote").textContent="Couldn't get an estimate. Edit prices manually instead."}
+};
+
+// history via Supabase
+async function refreshUser(){if(!sbReady)return;const r=await sb.auth.getSession();user=r.data.session?r.data.session.user:null}
+$("histBtn").onclick=async()=>{await refreshUser();$("histModal").hidden=false;
+  if(!user){$("histList").innerHTML='<p class="note">Log in from the home page to save and see your history.</p>';return}
+  const r=await sb.from("plans").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(20);
+  if(!r.data||!r.data.length){$("histList").innerHTML='<p class="note">No saved weeks yet.</p>';return}
+  $("histList").innerHTML=r.data.map((row,i)=>`<div class="hist" onclick='loadHist(${i})'><span>${new Date(row.created_at).toLocaleDateString()}</span><span>${row.data.cur||""} ${Math.round(row.data.total||0)}</span></div>`).join("");
+  window._hist=r.data;
+};
+window.loadHist=function(i){const row=window._hist[i];if(!row)return;S.plan=row.data.plan;S.o=row.data.o;$("histModal").hidden=true;$("out").hidden=false;render();$("out").scrollIntoView({behavior:"smooth"})};
+$("histClose").onclick=()=>$("histModal").hidden=true;
+$("saveHist").onclick=async()=>{
+  await refreshUser();
+  if(!user){alert("Log in from the home page first to save your history.");return}
+  const total=S.plan.reduce((s,d)=>s+TYPES.reduce((x,[t])=>x+mc(d[t]),0),0);
+  await sb.from("plans").insert({user_id:user.id,data:{plan:S.plan,o:S.o,total,cur:S.o.cur}});
+  alert("Saved to your history.");
+};
+
+// support chat via sample capability
+let chatHist=[];
+function addMsg(role,text){const d=document.createElement("div");d.className="msg "+(role==="user"?"me":"ai");d.textContent=text;$("chatLog").appendChild(d);$("chatLog").scrollTop=1e9}
+$("openSupport").onclick=()=>{$("settings").hidden=true;$("support").hidden=false;if(!chatHist.length)addMsg("ai","Hi! Ask me anything about using PlateWise — diets, budgets, the grocery list, or bugs you're seeing.")};
+$("supClose").onclick=()=>$("support").hidden=true;
+$("chatSend").onclick=async()=>{
+  const t=$("chatIn").value.trim();if(!t)return;$("chatIn").value="";addMsg("user",t);chatHist.push({role:"user",content:t});
+  const sample=await getAI();
+  if(!sample){addMsg("ai","Support chat isn't available right now. Try again in a bit.");return}
+  addMsg("ai","...");
+  try{
+    const r=await sample([{role:"user",content:"You are PlateWise's support assistant. Only help with using this meal-planner app: diets, allergies, budget, favourites, the grocery list, swapping meals, saving history, and sign-in problems. Keep answers short. Conversation so far:\n"+chatHist.map(m=>m.role+": "+m.content).join("\n")}],{modelTier:"quick"});
+    $("chatLog").lastChild.remove();addMsg("ai",r.text);chatHist.push({role:"assistant",content:r.text});
+  }catch(e){$("chatLog").lastChild.remove();addMsg("ai","Something went wrong. Try again.")}
+};
+$("chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("chatSend").onclick()}});
+refreshUser();
+</script>
+</body></html>

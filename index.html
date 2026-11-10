@@ -3,9 +3,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PlateWise</title>
 <style>
-:root{--bg:#fbfbf9;--card:#fff;--text:#1b221e;--muted:#68726c;--border:#e3e7e1;--accent:#2f7d4f;--accent2:#58b57d;--accent-t:#fff;--soft:#eaf4ee;--no:#c0392b;--glow:rgba(47,125,79,.2);--shadow:0 10px 30px rgba(30,60,40,.12);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d120f;--card:#161e19;--text:#eaf0eb;--muted:#9aa89f;--border:#27322b;--accent:#5fbf84;--accent2:#8be0ab;--accent-t:#0d1a11;--soft:#1b2a21;--no:#ef7b6d;--glow:rgba(95,191,132,.22);--shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d120f;--card:#161e19;--text:#eaf0eb;--muted:#9aa89f;--border:#27322b;--accent:#5fbf84;--accent2:#8be0ab;--accent-t:#0d1a11;--soft:#1b2a21;--no:#ef7b6d;--glow:rgba(95,191,132,.22);--shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark}
+:root{--bg:#0d120f;--card:#161e19;--text:#eaf0eb;--muted:#9aa89f;--border:#27322b;--accent:#5fbf84;--accent2:#8be0ab;--accent-t:#0d1a11;--soft:#1b2a21;--no:#ef7b6d;--glow:rgba(95,191,132,.25);--shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--bg:#fbfbf9;--card:#fff;--text:#1b221e;--muted:#68726c;--border:#e3e7e1;--accent:#2f7d4f;--accent2:#58b57d;--accent-t:#fff;--soft:#eaf4ee;--no:#c0392b;--glow:rgba(47,125,79,.2);--shadow:0 10px 30px rgba(30,60,40,.12);color-scheme:light}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:background .35s,color .35s}
@@ -40,6 +39,7 @@ main{max-width:980px;margin:0 auto;padding:0 16px 56px;position:relative;z-index
 .btn.big{padding:16px 38px;font-size:1.1rem;animation:pulse 2.4s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--glow)}70%{box-shadow:0 0 0 16px transparent}100%{box-shadow:0 0 0 0 transparent}}
 .btn.wide{width:100%}
+.btn.google{background:var(--card);color:var(--text);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:8px}
 h2{font-size:1.5rem;text-align:center;margin:52px 0 6px;letter-spacing:-.02em}
 .lead{text-align:center;color:var(--muted);margin:0 0 22px}
 .lines{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
@@ -76,18 +76,26 @@ h2{font-size:1.5rem;text-align:center;margin:52px 0 6px;letter-spacing:-.02em}
 label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px}
 input{width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;transition:border-color .2s,box-shadow .2s}
 input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+input.code{text-align:center;letter-spacing:.4em;font-size:1.3rem;font-weight:700}
 .seg{display:flex;gap:6px}.seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font:inherit;transition:transform .15s,background .2s}
 .seg button:hover{transform:translateY(-2px)}.seg button:active{transform:scale(.95)}
 .seg button.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
 .row{display:grid;gap:8px;margin-top:14px}
 .err{color:var(--no);font-size:.85rem;min-height:1.2em;margin-top:8px}
+.ok{color:var(--accent)}
 .center{text-align:center;padding:60px 0}
+.div{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem;margin:14px 0}
+.div::before,.div::after{content:"";flex:1;height:1px;background:var(--border)}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto;margin-bottom:10px}
+.msg{padding:8px 12px;border-radius:12px;font-size:.88rem;max-width:88%}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-t)}
+.msg.ai{align-self:flex-start;background:var(--soft)}
 @media(max-width:520px){.hb .t{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style></head>
 <body>
 <header>
-  <button class="hb" id="tt" aria-label="Switch light or dark">🌙</button>
+  <button class="hb" id="tt" aria-label="Switch light or dark">☀️</button>
   <div class="logo">Plate<span>Wise</span></div>
   <div class="hr">
     <button class="hb" id="lg">👤 <span class="t" id="lgT">Log in</span></button>
@@ -111,14 +119,14 @@ input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow
   <h2>Why choose PlateWise?</h2>
   <p class="lead">Planning meals is a weekly chore. This makes it a two-minute one.</p>
   <div class="lines">
-    <div class="card"><div class="ico">🍽️</div><h3>No more “what’s for dinner?”</h3><p>One click decides breakfast, lunch and dinner for the whole week.</p></div>
+    <div class="card"><div class="ico">🍽️</div><h3>No more "what's for dinner?"</h3><p>One click decides breakfast, lunch and dinner for the whole week.</p></div>
     <div class="card"><div class="ico">🛒</div><h3>One shop, not many</h3><p>A single grocery list for the week means fewer extra trips and fewer impulse buys.</p></div>
-    <div class="card"><div class="ico">💰</div><h3>Prices in dinars</h3><p>Costs come from ingredient prices you can edit to match your market.</p></div>
-    <div class="card"><div class="ico">🥗</div><h3>Built around how you eat</h3><p>From vegan to carnivore, with allergy meals removed, so you don’t filter recipes yourself.</p></div>
+    <div class="card"><div class="ico">💰</div><h3>Prices for your country</h3><p>Costs come from ingredient prices for where you live, which you can edit any time.</p></div>
+    <div class="card"><div class="ico">🥗</div><h3>Built around how you eat</h3><p>From vegan to carnivore, with allergy meals removed and a daily calorie limit.</p></div>
   </div>
 
   <h2>PlateWise vs ChatGPT</h2>
-  <p class="lead">ChatGPT can plan meals too, if you write the right prompt every time. Here’s what you skip.</p>
+  <p class="lead">ChatGPT can plan meals too, if you write the right prompt every time. Here's what you skip.</p>
   <div class="card box">
     <table class="cmp">
       <thead><tr><th></th><th class="us">PlateWise</th><th>ChatGPT</th></tr></thead>
@@ -126,7 +134,7 @@ input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow
         <tr><td>Weekly plan without writing a prompt</td><td class="yes">✓</td><td class="no">✕</td></tr>
         <tr><td>Tick-off grocery list on the same screen</td><td class="yes">✓</td><td class="no">✕</td></tr>
         <tr><td>Swap one meal in a single tap</td><td class="yes">✓</td><td class="no">✕</td></tr>
-        <tr><td>Budget and allergies applied automatically</td><td class="yes">✓</td><td class="no">✕</td></tr>
+        <tr><td>Calories, protein and carbs tracked for you</td><td class="yes">✓</td><td class="no">✕</td></tr>
         <tr><td>Answers any question</td><td class="no">✕</td><td class="yes">✓</td></tr>
       </tbody>
     </table>
@@ -147,7 +155,7 @@ input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow
       <span class="badge">7-day free trial</span>
       <h3>Pro</h3>
       <div class="price">$4.99 <small>/ month</small></div>
-      <ul><li>Everything in Free</li><li>Save your plans</li><li>Pantry: skip what you own</li><li>Share list with family</li><li>Calories per meal</li></ul>
+      <ul><li>Everything in Free</li><li>Save your plans (history)</li><li>Pantry: skip what you own</li><li>Share list with family</li><li>Calories, protein & carbs</li></ul>
       <button class="btn wide" onclick="choosePro()">Start 7-day free trial</button>
       <div class="fine">10-day money-back guarantee. Cancel anytime.</div>
       <div class="fine" id="proMsg" style="color:var(--no)"></div>
@@ -156,22 +164,23 @@ input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow
 
   <h2>Why choose Pro?</h2>
   <div class="card"><ul class="why">
-    <li><b>Keep what worked.</b> Save a week you liked and reuse it instead of starting over.</li>
-    <li><b>Waste less food.</b> Mark what’s already in your kitchen and it comes off the list.</li>
-    <li><b>Shop as a team.</b> Share one list with your partner or family.</li>
-    <li><b>Know what you eat.</b> See calories for every meal.</li>
+    <li><b>Don't start over each week.</b> Save plans you liked and reuse them.</li>
+    <li><b>Buy less you don't need.</b> Tell us what's in your kitchen and it leaves those items off the list.</li>
+    <li><b>Shop as a team.</b> You and your family tick off the same list.</li>
+    <li><b>Know what you eat.</b> See calories, protein and carbs for every meal.</li>
     <li><b>Easy to try.</b> 7 days free, then 10 days to get your money back.</li>
   </ul></div>
 </section>
-
 </main>
 
 <div class="scrim" id="settings" hidden>
   <div class="modal">
     <h3>Settings</h3>
     <label>Background</label>
-    <div class="seg" id="seg"><button data-t="system">System</button><button data-t="light">White</button><button data-t="dark">Black</button></div>
+    <div class="seg" id="seg"><button data-t="dark">⚫ Black</button><button data-t="light">⚪ White</button><button data-t="system">System</button></div>
     <div class="row" id="acct"></div>
+    <label style="margin-top:16px">Need help?</label>
+    <button class="btn alt wide" id="openSupport">💬 Ask support</button>
     <div class="row"><button class="btn alt" onclick="closeAll()">Close</button></div>
   </div>
 </div>
@@ -183,27 +192,54 @@ input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow
       <div id="nameRow"><label for="name">Name</label><input id="name" autocomplete="name"></div>
       <label for="email">Email</label><input id="email" type="email" autocomplete="email">
       <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+      <button type="button" class="btn google wide" id="googleBtn" style="margin-top:12px"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.7 0-14.3 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.6 35 26.9 36 24 36c-5.3 0-9.7-3.1-11.3-8l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C40.5 36.8 44 31.1 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg> Continue with Google</button>
+      <div class="div">or</div>
       <div class="err" id="err"></div>
-      <div class="row"><button class="btn wide" type="submit" id="authB">Log in</button>
+      <div class="row"><button class="btn wide" type="submit" id="authB">Continue</button>
       <button class="btn alt wide" type="button" id="sw"></button>
       <button class="btn alt wide" type="button" onclick="closeAll()">Cancel</button></div>
     </form>
   </div>
 </div>
 
+<div class="scrim" id="codeScrim" hidden>
+  <div class="modal">
+    <h3>Check your email</h3>
+    <p class="fine" style="margin-top:-6px" id="codeTo"></p>
+    <form id="fc" novalidate>
+      <p class="fine">Click the link in that email, then come back and log in with your email and password.</p>
+      <div class="err" id="cerr" style="text-align:center"></div>
+      <div class="row"><button class="btn wide" type="submit">Go to log in</button>
+      <button class="btn alt wide" type="button" id="resend">Resend email</button>
+      <button class="btn alt wide" type="button" onclick="closeAll()">Cancel</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="scrim" id="support" hidden>
+  <div class="modal">
+    <h3>Support</h3>
+    <p class="fine" style="margin-top:-6px">Ask about using PlateWise. This isn't a nutritionist or doctor.</p>
+    <div class="chat" id="chatLog"></div>
+    <div class="row" style="grid-template-columns:1fr auto;display:grid;gap:8px">
+      <input id="chatIn" placeholder="Describe the problem...">
+    </div>
+    <div class="row"><button class="btn wide" id="chatSend">Send</button>
+    <button class="btn alt wide" onclick="$('support').hidden=true">Close</button></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-// 1) Paste your Supabase values here (Project Settings > API). The anon key is safe to expose.
 const SUPABASE_URL="https://idrcnuzsdrhdyjpybbqt.supabase.co",SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkcmNudXpzZHJoZHlqcHliYnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwMTk1MDIsImV4cCI6MjEwOTU5NTUwMn0.v7jg0Lgrn6UZ0EplNXRH26GpOXAFj5DfdLgaNiN_dQE";
-// 2) Paste your payment provider's checkout link here once you have one. Empty = Pro stays closed.
 const CHECKOUT_URL="";
 const $=id=>document.getElementById(id);
 const ready=!SUPABASE_URL.startsWith("PASTE");
 const sb=ready?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-let user=null,profile=null,mode="login",theme="system";
+let user=null,profile=null,mode="login",theme="dark",pendingEmail="",pendingName="";
 const dark=()=>theme==="dark"||(theme==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
 function show(v){document.querySelectorAll(".view").forEach(s=>s.hidden=s.id!=="v-"+v);window.scrollTo(0,0)}
-function closeAll(){$("settings").hidden=true;$("auth").hidden=true}
+function closeAll(){$("settings").hidden=true;$("auth").hidden=true;$("codeScrim").hidden=true}
 function setTheme(t){
   theme=t;
   if(t==="system")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",t);
@@ -212,7 +248,6 @@ function setTheme(t){
   try{localStorage.setItem("pw-theme",t)}catch(e){}
 }
 function hdr(){$("lgT").textContent=user?user.name:"Log in"}
-function msg(t,ok){$("err").textContent=t;$("err").style.color=ok?"var(--accent)":"var(--no)"}
 async function load(session){
   user=null;profile=null;
   if(session){
@@ -240,34 +275,49 @@ function openAuth(m){
   mode=m;closeAll();
   const s=m==="signup";
   $("authT").textContent=s?"Create your account":"Log in";
-  $("authB").textContent=s?"Sign up":"Log in";
   $("nameRow").hidden=!s;
   $("sw").textContent=s?"I already have an account":"Create a new account";
   $("sw").onclick=()=>openAuth(s?"login":"signup");
-  $("pw").autocomplete=s?"new-password":"current-password";
-  msg("");$("auth").hidden=false;
+  $("err").textContent="";$("auth").hidden=false;
 }
 $("f").addEventListener("submit",async e=>{
   e.preventDefault();
-  const email=$("email").value.trim(),pw=$("pw").value,name=$("name").value.trim();
-  if(!ready)return msg("The site isn’t connected to its database yet.");
-  if(!/^\S+@\S+\.\S+$/.test(email))return msg("Enter a valid email.");
-  if(pw.length<6)return msg("Password needs at least 6 characters.");
-  if(mode==="signup"&&!name)return msg("Enter your name.");
+  const email=$("email").value.trim(),name=$("name").value.trim(),pw=$("pw").value;
+  if(!ready)return $("err").textContent="The site isn't connected to its database yet.";
+  if(!/^\S+@\S+\.\S+$/.test(email))return $("err").textContent="Enter a valid email.";
+  if(pw.length<6)return $("err").textContent="Password needs at least 6 characters.";
+  if(mode==="signup"&&!name)return $("err").textContent="Enter your name.";
   $("authB").disabled=true;
-  const r=mode==="signup"?await sb.auth.signUp({email,password:pw,options:{data:{name}}}):await sb.auth.signInWithPassword({email,password:pw});
+  const r=mode==="signup"
+    ?await sb.auth.signUp({email,password:pw,options:{data:{name}}})
+    :await sb.auth.signInWithPassword({email,password:pw});
   $("authB").disabled=false;
-  if(r.error)return msg(r.error.message);
-  if(!r.data.session)return msg("Check your email to confirm your account, then log in.",true);
-  $("pw").value="";closeAll();
-  await load(r.data.session);enter();
+  if(r.error)return $("err").textContent=r.error.message;
+  if(!r.data.session){
+    pendingEmail=email;pendingName=name;
+    closeAll();$("codeTo").textContent="Email confirmation sent. Check your email for the code.";$("cerr").textContent="";
+    $("codeScrim").hidden=false;
+    return;
+  }
+  closeAll();await load(r.data.session);enter();
 });
+$("fc").addEventListener("submit",e=>{e.preventDefault();closeAll();openAuth("login")});
+$("resend").onclick=async()=>{
+  if(!pendingEmail)return;
+  $("cerr").className="err ok";$("cerr").textContent="Resending confirmation email...";
+  const r=await sb.auth.resend({type:"signup",email:pendingEmail});
+  $("cerr").textContent=r.error?r.error.message:"Confirmation email resent. Check your inbox.";
+};
+$("googleBtn").onclick=async()=>{
+  if(!ready)return;
+  await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname}});
+};
 async function chooseFree(){
   await sb.from("profiles").update({onboarded:true}).eq("id",user.id);
   location.href="planner.html";
 }
 function choosePro(){
-  if(!CHECKOUT_URL){$("proMsg").textContent="Pro checkout isn’t open yet. You stay on Free, and Pro only unlocks after payment.";return}
+  if(!CHECKOUT_URL){$("proMsg").textContent="Pro checkout isn't open yet. You stay on Free, and Pro only unlocks after payment.";return}
   location.href=CHECKOUT_URL;
 }
 async function logout(){if(sb)await sb.auth.signOut();user=null;profile=null;closeAll();hdr();show("landing")}
@@ -276,8 +326,24 @@ $("lg").onclick=()=>user?openSettings():openAuth("login");
 $("tt").onclick=()=>setTheme(dark()?"light":"dark");
 $("seg").onclick=e=>{if(e.target.dataset.t)setTheme(e.target.dataset.t)};
 document.querySelectorAll(".scrim").forEach(s=>s.addEventListener("click",e=>{if(e.target===s)closeAll()}));
-let t="system";try{t=localStorage.getItem("pw-theme")||"system"}catch(e){}
+let t="dark";try{t=localStorage.getItem("pw-theme")||"dark"}catch(e){}
 setTheme(t);
 if(ready)sb.auth.getSession().then(r=>load(r.data.session));
+
+// support chat
+let chatHist=[];
+function addMsg(role,text){const d=document.createElement("div");d.className="msg "+(role==="user"?"me":"ai");d.textContent=text;$("chatLog").appendChild(d);$("chatLog").scrollTop=1e9}
+$("openSupport").onclick=()=>{$("settings").hidden=true;$("support").hidden=false;if(!chatHist.length)addMsg("ai","Hi! Ask me anything about using PlateWise — signing in, diets, budgets, or a bug you're seeing.")};
+$("chatSend").onclick=async()=>{
+  const t=$("chatIn").value.trim();if(!t)return;$("chatIn").value="";addMsg("user",t);chatHist.push({role:"user",content:t});
+  const sample=await claude.use("sample");
+  if(!sample){addMsg("ai","Support chat isn't available right now. Try again in a bit.");return}
+  addMsg("ai","...");
+  try{
+    const r=await sample([{role:"user",content:"You are PlateWise's support assistant. Only help with using this meal-planner app: signing in, diets, allergies, budget, calories, the grocery list, history, and Pro. Keep answers short. Conversation so far:\n"+chatHist.map(m=>m.role+": "+m.content).join("\n")}],{modelTier:"quick"});
+    $("chatLog").lastChild.remove();addMsg("ai",r.text);chatHist.push({role:"assistant",content:r.text});
+  }catch(e){$("chatLog").lastChild.remove();addMsg("ai","Something went wrong. Try again.")}
+};
+$("chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("chatSend").onclick()}});
 </script>
 </body></html>
