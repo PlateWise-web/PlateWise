@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy | PlateWise</title>
+<meta name="description" content="PlateWise Privacy Policy">
+<style>
+:root{--bg:#1a120d;--card:#251a13;--text:#f6ebdc;--muted:#b9a592;--border:#3a2a20;--accent:#f08a5d;--accent2:#f3b27c;--glow:rgba(240,138,93,.16);color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--bg:#fff8ee;--card:#fffdf8;--text:#2b1d14;--muted:#7a6656;--border:#ecdcc6;--accent:#c4411f;--accent2:#e0703e;--glow:transparent;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 "Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,.logo{font-family:"Fraunces",Georgia,"Times New Roman",serif}
+header{padding:14px clamp(16px,4vw,48px);text-align:center}
+.logo{font-weight:800;letter-spacing:-.03em;font-size:clamp(1.8rem,4vw,2.5rem)}.logo span{color:var(--accent)}.logo a{color:inherit;text-decoration:none}
+main{max-width:760px;margin:0 auto;padding:0 16px 56px;position:relative;z-index:0}
+main::before{content:"";position:absolute;inset:-120px -10px auto;height:380px;background:radial-gradient(ellipse at 50% 0,var(--glow),transparent 70%);z-index:-1}
+.pg{padding:36px 0}
+.back{display:inline-block;color:var(--accent);text-decoration:none;font-weight:700;margin-bottom:14px}.back:hover{text-decoration:underline}
+.pg h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;letter-spacing:-.03em;margin:0 0 14px}
+.pg h4{margin:20px 0 4px;font-size:1.05rem}
+.pg p{margin:0 0 10px;color:var(--text)}
+footer{padding:28px 16px 36px;border-top:1px solid var(--border);font-size:.85rem;color:var(--muted);display:flex;gap:6px 18px;justify-content:center;flex-wrap:wrap}
+footer a{color:inherit;text-decoration:underline}
+</style></head><body>
+<header><div class="logo"><a href="/">Plate<span>Wise</span></a></div></header>
+<main><section class="pg"><a class="back" href="/">&larr; Back</a><h1>Privacy Policy</h1>
+<p>Last updated: November 24, 2026. Operator: [your name or company], contact: [your contact email].</p>
+<h4>What we collect</h4><p>The choices you enter (diet, allergies, calories, budget, country, favourite foods) stay in your browser and are not sent to us unless you save a week. For your account we store your name, email and a password (handled by Supabase), or your Google name and email if you use Google sign-in, and only the weeks you choose to save: the plan, diet, allergies, number of people, calorie limit, budget and currency. Allergies can be health-related, so we store them only after you confirm a save. We don’t collect your name, phone, location, payment details or advertising IDs, and we use no analytics.</p>
+<h4>AI features</h4><p>Only when you use them: the price review (ticked by default when you generate a week) sends your country, currency and ingredient names to an AI service (Anthropic’s Claude). The calorie calculator sends the sex, age, height, weight, activity level and goal you enter to the same service. A meal photo you choose to upload is sent to the same service to estimate its calories, and we don’t store it. The prep guide sends meal and ingredient names, your diet type and your allergies to it. Support chat sends what you type, so please don’t include personal or health details.</p>
+<h4>Third parties</h4><p>Supabase (accounts and saved weeks); jsDelivr (delivers the sign-in script and sees your IP address); Google (optional sign-in; fonts only if you accept optional cookies); Anthropic (AI features, when used); our web host. We don’t sell your data or share it for advertising.</p>
+<h4>Your rights</h4><p>You can delete your saved weeks in Settings at any time. To access, correct or delete your account and email, write to [your contact email]. We keep data until you delete it.</p>
+</section></main>
+<footer><span>&copy; PlateWise 2026</span><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a><a href="/#refunds">Refund Policy</a><a href="/#cookies">Cookie Policy</a></footer>
+<script>
+/* same behaviour as the main page: dark by default, light only if chosen there; web fonts only if optional cookies were accepted */
+try{if(localStorage.getItem("pw-theme")==="light")document.documentElement.setAttribute("data-theme","light");
+if(localStorage.getItem("pw-consent")==="all"){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Nunito:wght@400;600;700&display=swap";document.head.appendChild(l)}}catch(e){}
+</script>
+</body></html>
