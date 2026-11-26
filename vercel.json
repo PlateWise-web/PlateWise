@@ -1,7 +1,0 @@
-{
-  "cleanUrls": true,
-  "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/PlateWise", "destination": "/", "permanent": true }
-  ]
-}
